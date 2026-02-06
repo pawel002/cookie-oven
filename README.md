@@ -14,7 +14,7 @@ CookieOven allows you to view, manage, and decrypt cookies directly from your br
 
 ## Installation
 
-You need npm installed. Then you can build the project locally using:
+You need [npm](https://docs.npmjs.com/) installed. Then you can build the project locally using:
 
 ```bash
 git clone https://github.com/yourusername/cookie-oven.git
