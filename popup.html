@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cookie Manager</title>
+    <link rel="stylesheet" href="./src/css/style.css" /> 
+  </head>
+  <body>
+    <div class="app-container">
+      <header class="main-header">
+        <div class="header-top">
+          <h1 class="logo">Cookie<span class="highlight">Oven</span></h1>
+          <!-- Settings button removed -->
+        </div>
+        <div class="search-bar">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="search-input" placeholder="Search cookies..." />
+        </div>
+      </header>
+      
+      <main id="cookie-list" class="cookie-list">
+        <!-- Cookie cards will be injected here -->
+        <div class="empty-state">
+          <p>No cookies found.</p>
+        </div>
+      </main>
+
+      <!-- Settings Modal -->
+      <!-- Settings Modal Removed -->
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

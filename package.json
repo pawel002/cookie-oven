@@ -1,0 +1,19 @@
+{
+  "name": "cookie-chrome-extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build && cp manifest.json dist/ && mkdir -p dist/src/assets/icons && cp src/assets/icons/* dist/src/assets/icons/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "jose": "^6.1.3"
+  }
+}
