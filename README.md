@@ -17,10 +17,10 @@ CookieOven allows you to view, manage, and decrypt cookies directly from your br
 You need npm installed. Then you can build the project locally using:
 
 ```bash
-    git clone https://github.com/yourusername/cookie-oven.git
-    cd cookie-oven
-    npm install
-    npm run build
+git clone https://github.com/yourusername/cookie-oven.git
+cd cookie-oven
+npm install
+npm run build
 ```
 
 Load into Chrome:
