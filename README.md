@@ -1,4 +1,4 @@
-# CookieOven
+# <img src="src/assets/icons/icon.svg" width="30" height="30" style="vertical-align: bottom;"> Cookie Oven
 
 CookieOven allows you to view, manage, and decrypt cookies directly from your browser toolbar. It is designed with a modern interface and specific support for JWE (JSON Web Encryption) token decryption.
 
