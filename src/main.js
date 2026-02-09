@@ -6,14 +6,21 @@ import "./css/style.css";
 const ui = new UI();
 let allCookies = [];
 
+const searchInput = document.getElementById("search-input");
+
 async function init() {
   allCookies = await CookieService.getAll();
   ui.setCookies(allCookies);
-  ui.render();
+
+  // Trigger initial search if value restored
+  if (searchInput && searchInput.value) {
+    searchInput.dispatchEvent(new Event("input"));
+  } else {
+    ui.render();
+  }
 }
 
 // Global seach handling
-const searchInput = document.getElementById("search-input");
 if (searchInput) {
   searchInput.addEventListener("input", (e) => {
     const term = e.target.value.toLowerCase();

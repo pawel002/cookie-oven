@@ -7,6 +7,8 @@ export class UI {
     this.searchInput = document.getElementById("search-input");
     this.cookies = [];
     this.pendingScrollTop = null;
+    this.expandedCookies = new Set();
+    this.decodedCookies = new Set();
 
     this.initEventListeners();
     this.restoreState();
@@ -28,13 +30,23 @@ export class UI {
     const savedSearch = localStorage.getItem("ui_search_term");
     if (savedSearch && this.searchInput) {
       this.searchInput.value = savedSearch;
-      // Dispatch input event to trigger any external filtering listeners
       this.searchInput.dispatchEvent(new Event("input"));
     }
 
     const savedScroll = localStorage.getItem("ui_scroll_top");
     if (savedScroll) {
       this.pendingScrollTop = parseInt(savedScroll, 10);
+    }
+
+    try {
+      this.expandedCookies = new Set(
+        JSON.parse(localStorage.getItem("ui_expanded_cookies") || "[]"),
+      );
+      this.decodedCookies = new Set(
+        JSON.parse(localStorage.getItem("ui_decoded_cookies") || "[]"),
+      );
+    } catch (e) {
+      console.error("Failed to restore cookie state", e);
     }
   }
 
@@ -89,6 +101,12 @@ export class UI {
       ? '<span class="chip http">HttpOnly</span>'
       : "";
 
+    // Apply expanded state
+    const cookieId = `${cookie.domain}_${cookie.name}`;
+    if (this.expandedCookies.has(cookieId)) {
+      card.classList.add("expanded");
+    }
+
     card.innerHTML = `
       <div class="card-summary">
         <div class="card-info">
@@ -113,6 +131,18 @@ export class UI {
     // --- 4. Attach Event Listeners ---
     this.attachCardEvents(card, cookie, isToken, cookieKeyId, cookieB64Id);
 
+    // Auto-decrypt if needed
+    if (isToken && this.decodedCookies.has(cookieId)) {
+      const b64Btn = card.querySelector(".btn-b64");
+      const processBtn = card.querySelector(".btn-process");
+      const container = card.querySelector(".decrypted-view-container");
+      
+      // We simulate the decryption process
+      // But we must respect the UI state (loading buttons etc not strictly needed for auto-load but good for consistency)
+      // Since handleDecryption is async, we fire and forget, effectively
+      this.handleDecryption(cookie.value, savedLocalKey, savedB64Mode, container);
+    }
+
     return card;
   }
 
@@ -132,8 +162,18 @@ export class UI {
 
   attachCardEvents(card, cookie, isToken, keyId, b64Id) {
     // Expand/Collapse
+    // Expand/Collapse
     card.querySelector(".card-summary").onclick = () => {
       card.classList.toggle("expanded");
+      
+      // Save state
+      const cookieId = `${cookie.domain}_${cookie.name}`;
+      if (card.classList.contains("expanded")) {
+        this.expandedCookies.add(cookieId);
+      } else {
+        this.expandedCookies.delete(cookieId);
+      }
+      localStorage.setItem("ui_expanded_cookies", JSON.stringify([...this.expandedCookies]));
     };
 
     // Copy Button
@@ -173,6 +213,11 @@ export class UI {
         processBtn.disabled = true;
 
         await this.handleDecryption(cookie.value, customKey, isB64, container);
+
+        // Save decoded state
+        const cookieId = `${cookie.domain}_${cookie.name}`;
+        this.decodedCookies.add(cookieId);
+        localStorage.setItem("ui_decoded_cookies", JSON.stringify([...this.decodedCookies]));
 
         // Restore UI State
         processBtn.textContent = "Decrypt";
@@ -264,6 +309,13 @@ export class UI {
       CookieService.delete(cookie).then(() => {
         localStorage.removeItem(keyId);
         localStorage.removeItem(b64Id);
+
+        // Remove from local sets
+        const cookieId = `${cookie.domain}_${cookie.name}`;
+        this.expandedCookies.delete(cookieId);
+        this.decodedCookies.delete(cookieId);
+        localStorage.setItem("ui_expanded_cookies", JSON.stringify([...this.expandedCookies]));
+        localStorage.setItem("ui_decoded_cookies", JSON.stringify([...this.decodedCookies]));
 
         // Remove from local state and DOM
         this.cookies = this.cookies.filter((c) => c !== cookie);
