@@ -37,7 +37,6 @@ export class CryptoService {
       let secretKey;
 
       if (isBase64) {
-        // Implementation of: ensureKeyLength(Base64.from(b64key).decode(), 64)
         try {
           let cleanKey = keyInput.trim().replace(/-/g, "+").replace(/_/g, "/");
           while (cleanKey.length % 4) {
@@ -68,15 +67,12 @@ export class CryptoService {
 
       const { plaintext } = await jose.compactDecrypt(token, secretKey);
 
-      // 3. Return readable JSON
       const result = new TextDecoder().decode(plaintext);
 
       let finalOutput = result;
       try {
         finalOutput = JSON.stringify(JSON.parse(result), null, 2);
-      } catch {
-        // Return raw string
-      }
+      } catch {}
 
       return { output: finalOutput, debug: debugLog };
     } catch (e) {

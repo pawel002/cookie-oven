@@ -1,7 +1,6 @@
 import { CookieService } from "./services/cookieService.js";
 import { UI } from "./ui/ui.js";
 
-// CSS import for Vite to bundle
 import "./css/style.css";
 
 const ui = new UI();
@@ -13,7 +12,7 @@ async function init() {
   ui.render();
 }
 
-// Global search handling
+// Global seach handling
 const searchInput = document.getElementById("search-input");
 if (searchInput) {
   searchInput.addEventListener("input", (e) => {
