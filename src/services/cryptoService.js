@@ -3,7 +3,7 @@ import * as jose from "jose";
 export class CryptoService {
   /**
    * Tries to decode a standard JWT (Base64 parts)
-   * This remains useful for non-encrypted tokens.
+   * This remains useful for non-encrypted tokens (JWS).
    */
   static decodeJWT(token) {
     try {
@@ -19,16 +19,14 @@ export class CryptoService {
    * Auto-detects algorithm from the token header.
    * @param {string} token
    * @param {string} keyInput - The key string (plain text or base64)
-   * @param {boolean} isBase64 - Whether to treat the key as Base64 and resize to 64 bytes
+   * @param {boolean} isBase64 - Whether to treat the key as Base64
    * @returns {Promise<{output: string, debug: string}>}
    */
   static async decryptJWE(token, keyInput, isBase64 = false) {
-    debugLog = "";
-
+    let debugLog = "";
     if (!keyInput || !keyInput.trim()) {
       return {
-        output:
-          "Error: No secret key provided. Please set it in Settings or Custom Key field.",
+        output: "Error: No secret key provided.",
         debug: debugLog,
       };
     }
@@ -42,18 +40,14 @@ export class CryptoService {
           while (cleanKey.length % 4) {
             cleanKey += "=";
           }
+
           const binaryStr = atob(cleanKey);
-          const bytes = new Uint8Array(binaryStr.length);
+          secretKey = new Uint8Array(binaryStr.length);
           for (let i = 0; i < binaryStr.length; i++) {
-            bytes[i] = binaryStr.charCodeAt(i);
+            secretKey[i] = binaryStr.charCodeAt(i);
           }
 
-          secretKey = new Uint8Array(64);
-          if (bytes.length > 64) {
-            secretKey.set(bytes.subarray(0, 64));
-          } else {
-            secretKey.set(bytes);
-          }
+          debugLog += `Key Mode: Base64 (Length: ${secretKey.length} bytes)\n`;
         } catch (e) {
           return {
             output: `Error: Invalid Base64 key string. Details: ${e.message}`,
@@ -63,31 +57,46 @@ export class CryptoService {
       } else {
         const encoder = new TextEncoder();
         secretKey = encoder.encode(keyInput);
+        debugLog += `Key Mode: UTF-8 String (Length: ${secretKey.length} bytes)\n`;
+      }
+
+      const header = this.getTokenHeader(token);
+      if (header) {
+        debugLog += `Token Algorithm: ${header.alg}\n`;
+        debugLog += `Token Encryption: ${header.enc}\n`;
       }
 
       const { plaintext } = await jose.compactDecrypt(token, secretKey);
-
       const result = new TextDecoder().decode(plaintext);
 
       let finalOutput = result;
       try {
         finalOutput = JSON.stringify(JSON.parse(result), null, 2);
-      } catch {}
+      } catch (e) {}
 
       return { output: finalOutput, debug: debugLog };
     } catch (e) {
       console.error("Decryption failed:", e);
+
       let errorMsg = `Error: ${e.message}`;
-      if (e.message.includes("decryption operation failed")) {
-        errorMsg += "\n(The key might be incorrect or algorithm mismatch)";
+
+      if (
+        e.code === "ERR_JWE_INVALID" ||
+        e.message.includes("decryption operation failed")
+      ) {
+        errorMsg += "\n(Cause: Key mismatch or invalid tag)";
+      } else if (
+        e.code === "ERR_JWE_INVALID_KEY_LENGTH" ||
+        e.message.includes("Key length")
+      ) {
+        errorMsg +=
+          "\n(Cause: The key length does not match the algorithm requirements)";
       }
+
       return { output: errorMsg, debug: debugLog };
     }
   }
 
-  /**
-   * Peeks at the token header to show algorithm info.
-   */
   static getTokenHeader(token) {
     try {
       return jose.decodeProtectedHeader(token);
