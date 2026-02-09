@@ -24,6 +24,26 @@ export class UI {
     this.listContainer.addEventListener("scroll", () => {
       localStorage.setItem("ui_scroll_top", this.listContainer.scrollTop);
     });
+
+    // Manual Decode Events
+    const manualBtn = document.getElementById("btn-manual-decode");
+    const manualModal = document.getElementById("manual-decode-modal");
+    const manualClose = document.getElementById("manual-close");
+    const manualProcessBtn = document.getElementById("manual-process-btn");
+    const manualB64Btn = document.getElementById("manual-b64-btn");
+
+    if (manualBtn) {
+      manualBtn.onclick = () => this.toggleManualModal(true);
+    }
+    if (manualClose) {
+      manualClose.onclick = () => this.toggleManualModal(false);
+    }
+    if (manualB64Btn) {
+      manualB64Btn.onclick = () => manualB64Btn.classList.toggle("active");
+    }
+    if (manualProcessBtn) {
+      manualProcessBtn.onclick = () => this.handleManualDecrypt();
+    }
   }
 
   restoreState() {
@@ -325,6 +345,32 @@ export class UI {
         if (this.cookies.length === 0) this.render();
       });
     }
+  }
+
+  // --- Manual Decode Logic ---
+
+  toggleManualModal(show) {
+    const modal = document.getElementById("manual-decode-modal");
+    if (show) modal.classList.remove("hidden");
+    else modal.classList.add("hidden");
+  }
+
+  async handleManualDecrypt() {
+    const input = document.getElementById("manual-jwt-input").value.trim();
+    const key = document.getElementById("manual-key-input").value;
+    const isB64 = document.getElementById("manual-b64-btn").classList.contains("active");
+    const container = document.getElementById("manual-results");
+    const processBtn = document.getElementById("manual-process-btn");
+
+    if (!input) return;
+
+    processBtn.textContent = "Processing...";
+    processBtn.disabled = true;
+
+    await this.handleDecryption(input, key, isB64, container);
+
+    processBtn.textContent = "Decrypt";
+    processBtn.disabled = false;
   }
 
   showFullscreen(content, debug, header) {

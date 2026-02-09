@@ -86,6 +86,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
+  font-weight: 500;
+  font-size: 13px;
 }
 
 .icon-btn:hover {
@@ -581,4 +584,37 @@ body {
 /* --- Utilities --- */
 .hidden {
   display: none !important;
+}
+
+/* --- Manual Decode Styles --- */
+.manual-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.manual-input-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.manual-textarea {
+  width: 100%;
+  height: 100px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #e2e8f0;
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.manual-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
 }

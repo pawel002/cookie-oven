@@ -12,6 +12,10 @@
         <div class="header-top">
           <h1 class="logo">Cookie<span class="highlight">Oven</span></h1>
           <!-- Settings button removed -->
+          <button id="btn-manual-decode" class="icon-btn" title="Manual Decode">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            <span>Custom JWT</span>
+          </button>
         </div>
         <div class="search-bar">
           <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -26,8 +30,31 @@
         </div>
       </main>
 
-      <!-- Settings Modal -->
-      <!-- Settings Modal Removed -->
+      <!-- Manual Decode Modal -->
+      <div id="manual-decode-modal" class="fullscreen-modal hidden">
+        <div class="fullscreen-header">
+            <span class="fs-title">Manual Decode</span>
+            <button class="fullscreen-close" id="manual-close">&times;</button>
+        </div>
+        <div class="fullscreen-body">
+            <div class="manual-input-group">
+                <label>JWT / JWE Token</label>
+                <textarea id="manual-jwt-input" class="manual-textarea" placeholder="Paste your token here..."></textarea>
+            </div>
+            
+            <div class="crypto-zone">
+                <div class="key-input-wrapper">
+                    <input type="password" id="manual-key-input" class="local-key-input" placeholder="Decryption key (optional)">
+                    <button id="manual-b64-btn" class="btn-b64" title="Treat key as Base64">B64</button>
+                    <button id="manual-process-btn" class="btn btn-primary">Decrypt</button>
+                </div>
+            </div>
+
+            <div id="manual-results" class="decrypted-view-container hidden">
+                <!-- Results injected here -->
+            </div>
+        </div>
+      </div>
     </div>
     <script type="module" src="./src/main.js"></script>
   </body>
